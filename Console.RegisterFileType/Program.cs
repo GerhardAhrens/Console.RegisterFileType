@@ -21,6 +21,8 @@ namespace Console.RegisterFileType
     /* Imports from NET Framework */
     using System;
 
+    using Console.RegisterFileType.Features;
+
     public class Program
     {
         public Program()
@@ -31,34 +33,54 @@ namespace Console.RegisterFileType
 
         private static void Main(string[] args)
         {
-            CMenu unterMenu = new CMenu("Untermenü");
-            unterMenu.AddItem("Untermenüpunkt 1", () => UnterMenuPoint("A"), "🖥");
-            unterMenu.AddItem("Untermenüpunkt 2", () => UnterMenuPoint("B"), "🔊");
+            if (args.Contains("--register"))
+            {
+                if (FileAssociationManager.IsOwnedByApplication() == false)
+                {
+                    FileAssociationManager.Register();
+                }
 
-            CMenu mainMenu = new CMenu("Hauptmenü");
-            mainMenu.AddItem("Auswahl Menüpunkt 1", MenuPoint1);
-            mainMenu.AddSubMenu("Einstellungen", unterMenu, "⚙");
-            mainMenu.AddItem("Beenden", () => ApplicationExit());
-            mainMenu.Show();
-        }
+                Console.WriteLine("Dateityp registriert.");
+                Console.Wait();
+                return;
+            }
 
-        private static void ApplicationExit()
-        {
-            Environment.Exit(0);
-        }
+            if (args.Contains("--unregister"))
+            {
+                if (FileAssociationManager.IsOwnedByApplication() == true)
+                {
+                    FileAssociationManager.Unregister();
+                }
 
-        private static void MenuPoint1()
-        {
-            Console.Clear();
+                Console.WriteLine("Dateityp entfernt.");
+                Console.Wait();
+                return;
+            }
+
+            if (args.Length == 0)
+            {
+                Console.WriteLine("Keine Datei angegeben.");
+                return;
+            }
+
+            string filePath = args[0];
+
+            Console.WriteLine($"Datei geöffnet: {filePath}");
+
+            if (File.Exists(filePath))
+            {
+                string content = File.ReadAllText(filePath);
+
+                Console.WriteLine();
+                Console.WriteLine("=== Inhalt ===");
+                Console.WriteLine(content);
+            }
+            else
+            {
+                Console.WriteLine("Datei nicht gefunden.");
+            }
 
             Console.Wait();
-        }
-
-        private static void UnterMenuPoint(string param)
-        {
-            Console.Clear();
-
-            Console.Wait(param);
         }
     }
 }
