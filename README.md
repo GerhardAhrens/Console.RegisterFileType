@@ -12,17 +12,64 @@ wenn einen Datei mit einem Doppelklick über den Datei-Explorer aufgerufen wird, 
 ## Hinweis
 Der Source ist soll auch einfache Art und Weise die Funktionen eines Features zeigen. Der Source ist so geschrieben, das so wenig wie möglich zusätzliche NuGet-Pakete benötigt werden.
 
+# Features
+- IsRegistered; prüfen ob der Dateityp registriert ist
+- IsOwnedByApplication; prüfen ob der Dateityp für genau diese Anwendung registriert ist
+- Register(); einen Dateityp gegistrieren
+- Unregister(); Registrierung des Dateityp aufgeben (löschen)
+
 ## Beispielsource
 
-> Beschreibung
+Das Beispil zeigt, wie ein Datei-Typ geprüft, erstellt und wieder gelöscht werden kann.
 
 ```csharp
-```
+private static void Main(string[] args)
+{
+    if (args.Contains("--register"))
+    {
+        if (FileAssociationManager.IsOwnedByApplication() == false)
+        {
+            FileAssociationManager.Register();
+        }
 
-```xml
-```
+        Console.WriteLine("Dateityp registriert.");
+        return;
+    }
 
-```json
+    if (args.Contains("--unregister"))
+    {
+        if (FileAssociationManager.IsOwnedByApplication() == true)
+        {
+            FileAssociationManager.Unregister();
+        }
+
+        Console.WriteLine("Dateityp entfernt.");
+        return;
+    }
+
+    if (args.Length == 0)
+    {
+        Console.WriteLine("Keine Datei angegeben.");
+        return;
+    }
+
+    string filePath = args[0];
+
+    Console.WriteLine($"Datei geöffnet: {filePath}");
+
+    if (File.Exists(filePath))
+    {
+        string content = File.ReadAllText(filePath);
+
+        Console.WriteLine();
+        Console.WriteLine("=== Inhalt ===");
+        Console.WriteLine(content);
+    }
+    else
+    {
+        Console.WriteLine("Datei nicht gefunden.");
+    }
+}
 ```
 
 # Versionshistorie
